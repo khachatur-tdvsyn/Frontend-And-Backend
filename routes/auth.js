@@ -3,7 +3,7 @@ const User = require('../model/user')
 jwt = require('jsonwebtoken');
 
 router.post('/signin', async(req,res)=>{
-    const emailExists = await User.findOne({email: req.body.email}) 
+    const emailExists = await User.findOne({email: req.body.email})
     if (!emailExists) {
         res.status(400).send('Please register')
         return

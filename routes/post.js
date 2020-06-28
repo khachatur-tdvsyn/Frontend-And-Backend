@@ -19,8 +19,9 @@ router.get('/post/:id', checkToken, async (req,res)=>{
 router.post('/add',checkToken, async(req,res)=>{
     const post = new Post({
         title: req.body.title,
-        imgUrl: req.body.imgUrl,
-        userId: req.user
+        imgUrls: req.body.imgUrls,
+        userId: req.user,
+        tag: req.body.tag
     })
 
     try {
@@ -31,8 +32,16 @@ router.post('/add',checkToken, async(req,res)=>{
         res.status(400).send('Please try again')
     }
 })
-
-router.post('/del/:id', checkToken, async (req,res)=>{
+router.get("/tag/:tag", async(req,res) => {
+    const tags = req.params.tag.split("%20");
+    const thePosts = []
+    for(let i in tags){
+        const posts = Post.find({tag: tags[i]})
+        thePosts.push(posts);
+    }
+    res.send(thePosts);
+})
+router.delete('/del/:id', checkToken, async (req,res)=>{
     const token = jwt.verify(req.header('auth-token'), 'tumo_students')
     const delPost = await Post.findById(req.params.id)
     if(delPost.userId == token.id){
@@ -45,8 +54,21 @@ router.post('/del/:id', checkToken, async (req,res)=>{
 })
 
 router.get('/user/:userId',checkToken, async (req,res)=>{
+    console.log(typeof req.params.userId)
     const posts = await Post.find({userId: req.params.userId})
     res.send(posts)
 })
-
-module.exports  = router
+router.patch('/update/:id', checkToken, async (req, res) => {
+    const id = req.params.id
+    try {
+        const data = await Post.findByIdAndUpdate(id,{$set: {
+            title: req.body.title,
+            imageUrls: req.body.imageUrls,
+        }})
+        res.send(data)
+    } catch (error) {
+        res.status(400).send({message: "Plase try again"})
+        console.log(error);
+    }
+})
+module.exports = router

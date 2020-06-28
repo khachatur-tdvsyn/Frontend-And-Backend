@@ -7,15 +7,16 @@ const postSchema = new mongoose.Schema({
         min:2,
         required: true
     },
-    imgUrl: {
-        type: String,
-        max: 100,
-        min:2,
-        required: true
-    },
+    imgUrls: [String],
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
+    },
+    tag: {
+       type: String,
+       min: 2,
+       max: 100,
+       required: false
     },
     date: {
         type: Date,
